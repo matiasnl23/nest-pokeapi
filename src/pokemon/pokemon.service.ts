@@ -38,7 +38,7 @@ export class PokemonService {
   }
 
   findAll() {
-    return `This action returns all pokemon`;
+    return this.pokemonModel.find();
   }
 
   async findOne(term: string) {
@@ -66,8 +66,29 @@ export class PokemonService {
     return pokemon;
   }
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
+  async update(term: string, updatePokemonDto: UpdatePokemonDto) {
+    const pokemon = await this.findOne(term);
+    if (updatePokemonDto.name)
+      updatePokemonDto.name = updatePokemonDto.name.toLowerCase();
+
+    try {
+      await pokemon.updateOne(updatePokemonDto, {
+        new: true,
+      });
+
+      return { ...pokemon.toJSON(), ...updatePokemonDto };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          `Pokemon exists in db ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+
+      console.log(error);
+      throw new InternalServerErrorException(
+        `Can't update Pokemon - Check server logs`,
+      );
+    }
   }
 
   remove(id: number) {
