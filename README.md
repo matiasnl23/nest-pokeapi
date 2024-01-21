@@ -22,3 +22,11 @@ npm i -g @nestjs/cli
 ```
 docker-compose up -d
 ```
+
+5. Copiar ```.env.example``` a ```.env``` y modificar las variables de entorno necesarias
+
+6. Popular la base de datos
+
+```
+GET http://localhost:3000/api/v2/seed
+```
